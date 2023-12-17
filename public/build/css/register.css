@@ -1,0 +1,32 @@
+.box-register{
+    display: flex; 
+    align-items: center;
+}
+
+.dim{
+    width: 60%;
+}
+
+.registration{
+    padding: 0px;
+    width: 75%;
+}
+
+.section-bottom{
+    height: 100px;
+}
+
+@media screen and (max-width: 776px) {
+    .box-image-register{
+        display: none;
+        justify-content: center;
+   }
+   .box-register{ justify-content: center;}
+}
+
+@media screen and (max-width: 576px) {
+    .box-register{
+        padding-left: 20px;
+        justify-content: center;
+   }
+}

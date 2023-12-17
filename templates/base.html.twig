@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Obselete!
+			{% endblock %}
+		</title>
+		{% block stylesheets %}
+			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+			<link rel="stylesheet" href="https://bootswatch.com/5/lumen/bootstrap.min.css">
+			<link rel="stylesheet" href="/build/app.css">
+			<link rel="stylesheet" href="/build/css/form.css">
+			<link rel="stylesheet" href="/build/css/result.css">
+			<link rel="stylesheet" href="/build/css/features.css">
+			<link rel="stylesheet" href="/build/css/detail.css">
+			<link rel="stylesheet" href="/build/css/register.css">
+			<link rel="stylesheet" href="/build/css/connexion.css">
+		{% endblock %}
+	</head>
+	<body>
+		{% block header %}
+			{% include 'includes/_navbar.html.twig' %}
+		{% endblock %}
+
+		{% block body %}{% endblock %}
+
+		{% block footer %}
+			{% include 'includes/_footer.html.twig' %}
+		{% endblock %}
+	</body>
+
+	{% block javascript %}
+		<script src="../build/js/bootstrap.bundle.min.js"></script>
+	{% endblock %}
+
+</html>

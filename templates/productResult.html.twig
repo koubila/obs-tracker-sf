@@ -1,0 +1,187 @@
+{% extends 'base.html.twig' %}
+{% block title %}Results
+{% endblock %}
+{% block body %}
+	{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_USER') %}
+		{# setter a break and continue to define a message post-parse-array #}
+		{% set break = false %}
+		{% set continue = false %}
+		{# //comparaison des datas api et form #}
+		{# //pour chaque résultat de l'api on compare la clé avec brand/model/year #}
+		{# //parse dataApi #}
+		{% for result in results %}
+			{# parse again #}
+			{% for product in result %}
+				{# // if the key's value is == to brand/model/year #}
+				{% if product.text|lower == brand|lower or product.reference|lower == model|lower or product.date.date|date('Y') == year %}
+					{# display datas #}
+					<section class="description"> <div class="imageProduct">
+							<div class="card" style="width: 18rem;">
+								<img class="card-img-top" src="../images/products/{{product.imageName}}" alt="Card image cap">
+								<div class="card-body">
+									<h5 class="card-title">{{ product.text }}</h5>
+									<p class="card-text">{{ product.reference }}</p>
+									<p>{{ year }}</p>
+								</div>
+							</div>
+						</div>
+						<div class="card block-obso">
+							<div class="card-body card-logo-obso">
+
+								{%  set calculMoyenne = ((product.documentation + product.spare_part + product.demountability)/ 3 )|round %}
+
+								{% if calculMoyenne < 5 %}
+									<img class="card-img-top logo-obso" src="../build/img/logo-pc-3.png" alt="Card image cap">
+								{% elseif calculMoyenne < 7 %}
+									<img class="card-img-top logo-obso" src="../build/img/logo-pc-2.png" alt="Card image cap">
+								{% else %}
+									<img class="card-img-top logo-obso" src="../build/img/logo-pc-1.png" alt="Card image cap">
+								{% endif %}
+							</div>
+
+							<div class="card-body">
+								<p class="card-title">Availability of technical documentation:
+									{{ product.documentation }}</p>
+								<p class="card-title">Availability of spare parts:
+									{{ product.spare_part }}</p>
+								<p class="card-title">Easy of disassembly:
+									{{ product.demountability }}</p>
+								<p>Product average:{{ calculMoyenne }}</p>
+								{% if calculMoyenne < 5 %}
+									<p class="card-text">Bad choice ! You chose a bad product blabla etc...
+									</p>
+								{% elseif calculMoyenne < 7 %}
+									<p class="card-text">You could have chosen a better device! You chose an average product blabla etc....
+									</p>
+								{% else %}
+									<p class="card-text">Good choice! You have chosen a good product blabla etc ...
+									</p>
+								{% endif %}
+								<a href="{{ path('app_detail', { 'id': product.id}) }}" class="btn btn-outline-success">Product detail</a>
+							</div>
+						</div>
+					</section>
+					{% set break = false %}
+					{% set continue = true %}
+				{% endif %}
+			{% endfor %}
+			{% set break = true %}
+		{% endfor %}
+		{# // condition post-parse-array #}
+		{% if app.request.query.get('moyenne') is  null %}
+
+			{% if break == true  and continue == false %}
+
+				<p>Le produit recherché n'est pas référencé</p>
+		{% endif %}
+		{% endif %}
+		<hr style="width:100%;text-align:center;margin-left:0" class="col-10">
+		<a href="{{ path('app_research') }}" class="btn btn-outline-info">Back to my search</a>
+
+		<section>
+			<div>
+				<h1 id="header"></h1>
+				<h2 id='dataRange'></h2>
+			</div>
+			<div class="listProduct">
+				<div>
+					<table class="table">
+						<thead>
+						<tr>
+							<th scope="col">Obsolescence index</th>
+							<th scope="col">Brand</th>
+							<th scope="col">Model</th>
+							<th scope="col">Year</th>
+							<th scope="col">Documentation</th>
+							<th scope="col">Spart part</th>
+							<th scope="col">Demountability</th>
+							<th scope="col">Product average</th>
+						</tr>
+						</thead>
+						<tbody>
+						{% set userInput = app.request.query.get('moyenne') %}
+						<form class="form-inline">
+							 <label>
+								<input placeholder="Enter a value" class="form-control" type="text" name="moyenne">
+							</label>
+							<button class="btn btn-primary" type="submit">Search</button>
+						</form>
+						{% set userInput = app.request.query.get('moyenne') %}
+
+						{% for result in results %}
+							{% for product in result %}
+								<tr>
+
+								{%  set calculMoyenne = ((product.documentation + product.spare_part + product.demountability)/ 3 )|round %}
+
+								{% set result = product|filter(result => calculMoyenne == userInput) %}
+								{% if app.request.query.get('moyenne') is not null %}
+								{% if result is not null  and result is not empty%}
+									{% if calculMoyenne < 5 %}
+
+
+										<td class="box-logo-obso-list"><img class="card-logo-obso-list" src="../build/img/logo-pc-3.png" alt="Card image cap"></td>
+									{% elseif calculMoyenne < 7 %}
+										<td class="box-logo-obso-list"><img class="card-logo-obso-list" src="../build/img/logo-pc-2.png" alt="Card image cap"></td>
+									{% else %}
+										<td class="box-logo-obso-list"><img class="card-logo-obso-list" src="../build/img/logo-pc-1.png" alt="Card image cap"></td>
+									{% endif %}
+
+									<td>{{ result.text }}</td>
+									<td>{{ result.reference }}</td>
+									<td>{{ result.date.date|date('Y')}}</td>
+									<td>{{ result.documentation }}</td>
+									<td>{{ result.spare_part }}</td>
+									<td>{{ result.demountability }}</td>
+									<td>{{calculMoyenne}}</td>
+									<td class="">
+										<a href="{{ path('app_detail', { 'id': product.id}) }}">Product detail</a>
+									</td>
+								{#	{% if result.imageName  %}
+										<div class="col-md-10">
+										<img class="img-responsive" style="width: 30%" src="/images/products/{{result.imageName}} "  alt="{{ result.imageName }}">
+									{% endif %}#}
+
+								{% endif %}
+								<div>
+
+								{% endif %}
+
+
+
+								{% if app.request.query.get('moyenne') is  null %}
+
+									</div>
+									{% if calculMoyenne < 5 %}
+
+
+										<td class="box-logo-obso-list"><img class="card-logo-obso-list" src="../build/img/logo-pc-3.png" alt="Card image cap"></td>
+									{% elseif calculMoyenne < 7 %}
+										<td class="box-logo-obso-list"><img class="card-logo-obso-list" src="../build/img/logo-pc-2.png" alt="Card image cap"></td>
+									{% else %}
+										<td class="box-logo-obso-list"><img class="card-logo-obso-list" src="../build/img/logo-pc-1.png" alt="Card image cap"></td>
+									{% endif %}
+
+									<td>{{ product.text }}</td>
+									<td>{{ product.reference }}</td>
+									<td>{{product.date.date|date('Y')}}</td>
+									<td class="align-number">{{ product.documentation }}</td>
+									<td class="align-number">{{ product.spare_part }}</td>
+									<td class="align-number">{{ product.demountability }}</td>
+									<td>{{calculMoyenne}}</td>
+									<td class="">
+										<a href="{{ path('app_detail', { 'id': product.id}) }}">Product detail</a>
+									</td>
+									</tr>
+								{% endif %}
+
+							{% endfor %}
+						{% endfor %}
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+	{% endif %}
+{% endblock %}
